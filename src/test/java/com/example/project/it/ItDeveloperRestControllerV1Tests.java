@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -26,8 +27,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ItDeveloperRestControllerV1Tests {
+public class ItDeveloperRestControllerV1Tests extends AbstractRestControllerBaseTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -89,9 +91,10 @@ public class ItDeveloperRestControllerV1Tests {
     public void givenDeveloperDto_whenUpdateDeveloper_thenSuccessResponse() throws Exception {
         //given
         String updatedEmail = "updated@mail.com";
-        DeveloperEntity entity = DataUtils.getJohnDoePersisted();
+        DeveloperEntity entity = DataUtils.getJohnDoeTransient();
         developerRepository.save(entity);
         DeveloperDto dto = DataUtils.getJohnDoeDtoPersisted();
+        dto.setId(entity.getId());
         dto.setEmail(updatedEmail);
         //when
         ResultActions result = mockMvc.perform(put("/api/v1/developers")
